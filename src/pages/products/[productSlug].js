@@ -8,6 +8,7 @@ import Button from "@components/Button";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
 import styles from "@styles/Product.module.scss";
+import client from "@lib/client";
 
 export default function Product({ product }) {
   return (
@@ -47,11 +48,6 @@ export default function Product({ product }) {
 }
 
 export const getStaticProps = async ({ params }) => {
-  const client = new ApolloClient({
-    uri: "https://api-ap-south-1.graphcms.com/v2/cl25yibjg7r8f01xtfr16e1f4/master",
-    cache: new InMemoryCache(),
-  });
-
   const data = await client.query({
     query: gql`
       query PageProduct($slug: String!) {
@@ -79,11 +75,6 @@ export const getStaticProps = async ({ params }) => {
 };
 
 export const getStaticPaths = async () => {
-  const client = new ApolloClient({
-    uri: "https://api-ap-south-1.graphcms.com/v2/cl25yibjg7r8f01xtfr16e1f4/master",
-    cache: new InMemoryCache(),
-  });
-
   const data = await client.query({
     query: gql`
       query PageProducts {

@@ -10,6 +10,7 @@ import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import products from "@data/products";
 
 import styles from "@styles/Page.module.scss";
+import client from "@lib/client";
 
 export default function Home({ home, products }) {
   const { heroTitle, heroText, heroLink, heroBackground } = home;
@@ -74,11 +75,6 @@ export default function Home({ home, products }) {
 }
 
 export const getStaticProps = async () => {
-  const client = new ApolloClient({
-    uri: "https://api-ap-south-1.graphcms.com/v2/cl25yibjg7r8f01xtfr16e1f4/master",
-    cache: new InMemoryCache(),
-  });
-
   const data = await client.query({
     query: gql`
       query PageHome {
