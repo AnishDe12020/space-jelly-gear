@@ -35,7 +35,7 @@ export default function Home({ home, products }) {
                 src={heroBackground.url}
                 height={heroBackground.height}
                 width={heroBackground.width}
-                alt=""
+                alt="Hero Image"
               />
             </a>
           </Link>
@@ -54,7 +54,7 @@ export default function Home({ home, products }) {
                         width={product.image.width}
                         height={product.image.height}
                         src={product.image.url}
-                        alt=""
+                        alt={product.name}
                       />
                     </div>
                     <h3 className={styles.productTitle}>{product.name}</h3>

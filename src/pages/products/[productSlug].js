@@ -24,7 +24,7 @@ export default function Product({ product }) {
               width={product.image.width}
               height={product.image.height}
               src={product.image.url}
-              alt=""
+              alt={product.name}
             />
           </div>
           <div className={styles.productContent}>
