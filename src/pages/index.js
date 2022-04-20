@@ -96,7 +96,7 @@ export const getStaticProps = async () => {
           slug
           heroBackground
         }
-        products(first: 4) {
+        products(where: { categories_some: { slug: "featured" } }) {
           id
           name
           price
