@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import center from "@turf/center";
@@ -13,6 +14,8 @@ import client from "@lib/client";
 import Map from "@components/Map";
 
 export default function Stores({ storeLocations }) {
+  const [activeStore, setActiveStore] = useState();
+
   const features = points(
     storeLocations.map(({ location }) => {
       return [location.latitude, location.longitude];
@@ -35,24 +38,30 @@ export default function Stores({ storeLocations }) {
         <div className={styles.stores}>
           <div className={styles.storesLocations}>
             <ul className={styles.locations}>
-              {storeLocations.map((store) => (
-                <li key={store.id}>
-                  <p className={styles.locationName}>{store.name}</p>
-                  <address>{store.address}</address>
-                  <p>{store.phoneNumber}</p>
-                  <p className={styles.locationDiscovery}>
-                    <button>View on Map</button>
-                    <a
-                      href={`https://www.google.com/maps/dir//${store.location.latitude},${store.location.longitude}/@${store.location.latitude},${store.location.longitude},17z`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Get Directions
-                      <FaExternalLinkAlt />
-                    </a>
-                  </p>
-                </li>
-              ))}
+              {storeLocations.map((store) => {
+                const handleOnClick = () => {
+                  setActiveStore(store.id);
+                };
+
+                return (
+                  <li key={store.id}>
+                    <p className={styles.locationName}>{store.name}</p>
+                    <address>{store.address}</address>
+                    <p>{store.phoneNumber}</p>
+                    <p className={styles.locationDiscovery}>
+                      <button onClick={handleOnClick}>View on Map</button>
+                      <a
+                        href={`https://www.google.com/maps/dir//${store.location.latitude},${store.location.longitude}/@${store.location.latitude},${store.location.longitude},17z`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Get Directions
+                        <FaExternalLinkAlt />
+                      </a>
+                    </p>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
@@ -65,8 +74,21 @@ export default function Stores({ storeLocations }) {
                 scrollWheelZoom={false}
               >
                 {({ TileLayer, Marker, Popup }, map) => {
+                  const MapEffect = () => {
+                    useEffect(() => {
+                      if (!activeStore) return;
+
+                      const { location } = storeLocations.find(
+                        ({ id }) => id === activeStore
+                      );
+                      map.setView([location.latitude, location.longitude], 14);
+                    }, [activeStore]);
+                    return null;
+                  };
+
                   return (
                     <>
+                      <MapEffect />
                       <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
