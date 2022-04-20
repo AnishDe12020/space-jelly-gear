@@ -93,7 +93,7 @@ export const getStaticProps = async ({ params }) => {
   return { props: { category, products: category.products } };
 };
 
-export const getStaticPaths = async () => {
+export const getStaticPaths = async ({ locales }) => {
   const data = await client.query({
     query: gql`
       query PageCategories {
@@ -114,7 +114,14 @@ export const getStaticPaths = async () => {
   });
 
   return {
-    paths,
+    paths: [
+      ...paths,
+      ...paths.flatMap((path) => {
+        return locales.map((locale) => {
+          return { ...path, locale };
+        });
+      }),
+    ],
     fallback: false,
   };
 };
