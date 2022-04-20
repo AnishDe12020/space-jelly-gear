@@ -8,6 +8,7 @@ import Button from "@components/Button";
 import styles from "@styles/Page.module.scss";
 import { gql } from "@apollo/client";
 import client from "@lib/client";
+import Map from "@components/Map";
 
 export default function Stores({ storeLocations }) {
   return (
@@ -46,7 +47,36 @@ export default function Stores({ storeLocations }) {
 
           <div className={styles.storesMap}>
             <div className={styles.storesMapContainer}>
-              <div className={styles.map}>Map</div>
+              <Map
+                className={styles.map}
+                center={[0, 0]}
+                zoom={0}
+                scrollWheelZoom={false}
+              >
+                {({ TileLayer, Marker, Popup }, map) => {
+                  return (
+                    <>
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      {storeLocations.map((store) => (
+                        <Marker
+                          position={[
+                            store.location.latitude,
+                            store.location.longitude,
+                          ]}
+                          key={store.id}
+                        >
+                          <Popup>
+                            <p>{store.name}</p>
+                          </Popup>
+                        </Marker>
+                      ))}
+                    </>
+                  );
+                }}
+              </Map>
             </div>
           </div>
         </div>
