@@ -83,10 +83,10 @@ export default function Home({ home, products }) {
   );
 }
 
-export const getStaticProps = async () => {
+export const getStaticProps = async ({ locale }) => {
   const data = await client.query({
     query: gql`
-      query PageHome {
+      query PageHome($locale: Locale!) {
         page(where: { slug: "home" }) {
           id
           heroLink
@@ -95,6 +95,11 @@ export const getStaticProps = async () => {
           name
           slug
           heroBackground
+          localizations(locales: [$locale]) {
+            heroText
+            heroTitle
+            locale
+          }
         }
         products(where: { categories_some: { slug: "featured" } }) {
           id
@@ -105,9 +110,19 @@ export const getStaticProps = async () => {
         }
       }
     `,
+    variables: {
+      locale,
+    },
   });
 
-  const home = data.data.page;
+  let home = data.data.page;
+
+  if (home.localizations.length > 0) {
+    home = {
+      ...home,
+      ...home.localizations[0],
+    };
+  }
   const products = data.data.products;
 
   return { props: { home, products } };
