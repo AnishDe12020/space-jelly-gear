@@ -56,35 +56,47 @@ export default function Product({ product }) {
   );
 }
 
-export const getStaticProps = async ({ params }) => {
+export const getStaticProps = async ({ params, locale }) => {
   const data = await client.query({
     query: gql`
-      query PageProduct($slug: String!) {
+      query PageProduct($slug: String!, $locale: Locale!) {
         product(where: { slug: $slug }) {
           id
           image
           name
           price
+          slug
           description {
             html
           }
-          slug
+          localizations(locales: [$locale]) {
+            description {
+              html
+            }
+            locale
+          }
         }
       }
     `,
     variables: {
       slug: params.productSlug,
+      locale,
     },
   });
 
-  console.log(data);
+  let product = data.data.product;
 
-  const product = data.data.product;
+  if (product.localizations.length > 0) {
+    product = {
+      ...product,
+      ...product.localizations[0],
+    };
+  }
 
   return { props: { product } };
 };
 
-export const getStaticPaths = async () => {
+export const getStaticPaths = async ({ locales }) => {
   const data = await client.query({
     query: gql`
       query PageProducts {
@@ -104,7 +116,14 @@ export const getStaticPaths = async () => {
   });
 
   return {
-    paths,
+    paths: [
+      ...paths,
+      ...paths.flatMap((path) => {
+        return locales.map((locale) => {
+          return { ...path, locale };
+        });
+      }),
+    ],
     fallback: false,
   };
 };
